@@ -1,0 +1,425 @@
+/* Swiper Gallery Styles */
+.swiper-gallery {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.swiper-gallery .swiper-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  transition-property: transform;
+  box-sizing: content-box;
+}
+
+.swiper-gallery .swiper-slide {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition-property: transform, opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-in-out;
+}
+
+/* Variant slide animations */
+.swiper-gallery .swiper-slide--variant {
+  opacity: 1;
+}
+
+.swiper-gallery .swiper-slide.slide-hidden {
+  display: none !important;
+  opacity: 0;
+}
+
+.swiper-gallery.variant-filtering .swiper-slide {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Variant image overlay */
+.variant-image-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 2;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.swiper-gallery .swiper-slide img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.swiper-gallery .swiper-slide .variant-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Integration with existing product media styles */
+.swiper-gallery .product__media-item {
+  margin: 0;
+  padding: 0;
+}
+
+.swiper-gallery .product-media-container {
+  width: 100%;
+  height: auto;
+}
+
+/* Navigation Arrows */
+.swiper-gallery .swiper-button-prev,
+.swiper-gallery .swiper-button-next {
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--color-background), 0.8);
+  border: 1px solid rgba(var(--color-foreground), 0.1);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.swiper-gallery .swiper-button-prev:hover,
+.swiper-gallery .swiper-button-next:hover {
+  background: rgb(var(--color-background));
+  border-color: rgba(var(--color-foreground), 0.2);
+  transform: scale(1.05);
+}
+
+.swiper-gallery .swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-gallery .swiper-button-next {
+  right: 10px;
+}
+
+.swiper-gallery .swiper-button-prev.swiper-button-disabled,
+.swiper-gallery .swiper-button-next.swiper-button-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.swiper-gallery .swiper-button-prev svg,
+.swiper-gallery .swiper-button-next svg {
+  width: 16px;
+  height: 16px;
+  fill: rgb(var(--color-foreground));
+}
+
+.swiper-gallery .swiper-button-next svg {
+  transform: rotate(180deg);
+}
+
+/* Pagination */
+.swiper-gallery .swiper-pagination {
+  position: absolute;
+  text-align: center;
+  transition: 0.3s opacity;
+  transform: translate3d(0, 0, 0);
+  z-index: 10;
+}
+
+.swiper-gallery .swiper-pagination-bullets {
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+}
+
+.swiper-gallery .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: rgba(var(--color-foreground), 0.3);
+  opacity: 1;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.swiper-gallery .swiper-pagination-bullet:hover {
+  background: rgba(var(--color-foreground), 0.5);
+}
+
+.swiper-gallery .swiper-pagination-bullet-active {
+  background: rgb(var(--color-foreground));
+  transform: scale(1.2);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 749px) {
+  .swiper-gallery .swiper-button-prev,
+  .swiper-gallery .swiper-button-next {
+    width: 32px;
+    height: 32px;
+    margin-top: -16px;
+  }
+  
+  .swiper-gallery .swiper-button-prev {
+    left: 5px;
+  }
+  
+  .swiper-gallery .swiper-button-next {
+    right: 5px;
+  }
+  
+  .swiper-gallery .swiper-button-prev svg,
+  .swiper-gallery .swiper-button-next svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .swiper-gallery .swiper-pagination-bullet {
+    width: 6px;
+    height: 6px;
+    margin: 0 3px;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .swiper-gallery .swiper-button-prev,
+  .swiper-gallery .swiper-button-next {
+    width: 38px;
+    height: 38px;
+    margin-top: -19px;
+  }
+  
+  .swiper-gallery .swiper-button-prev svg,
+  .swiper-gallery .swiper-button-next svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Hidden states */
+.swiper-gallery .swiper-pagination.swiper-pagination-hidden {
+  display: none;
+}
+
+.swiper-gallery .swiper-button-prev.swiper-button-hidden,
+.swiper-gallery .swiper-button-next.swiper-button-hidden {
+  display: none;
+}
+
+/* Smooth transitions */
+.swiper-gallery .swiper-wrapper {
+  will-change: transform;
+}
+
+.swiper-gallery .swiper-slide {
+  will-change: transform;
+}
+
+/* Accessibility improvements */
+.swiper-gallery .swiper-button-prev:focus,
+.swiper-gallery .swiper-button-next:focus {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+.swiper-gallery .swiper-pagination-bullet:focus {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+/* XR Button integration */
+.product__xr-button {
+  margin-top: 1rem;
+}
+
+/* Media gallery container adjustments */
+media-gallery swiper-gallery {
+  display: block;
+  width: 100%;
+}
+
+/* Variant color images styles */
+.swiper-gallery .swiper-slide--variant {
+  background: rgba(var(--color-background), 1);
+}
+
+.swiper-gallery .variant-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  padding: 1rem;
+  color: white;
+  font-size: 1.4rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.swiper-gallery .swiper-slide--variant:hover .variant-image-overlay {
+  opacity: 1;
+}
+
+.swiper-gallery .variant-image-title {
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Variant thumbnail styles */
+.thumbnail-list_item--variant-color .thumbnail__badge {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  z-index: 2;
+}
+
+.thumbnail-list_item--variant-color .variant-color-badge {
+  background: rgba(var(--color-foreground), 0.9);
+  color: rgba(var(--color-background), 1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.thumbnail-list_item--variant-color {
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.thumbnail-list_item--variant-color:hover,
+.thumbnail-list_item--variant-color.active {
+  border-color: rgba(var(--color-foreground), 0.5);
+}
+
+/* Responsive adjustments for variant images */
+@media screen and (max-width: 749px) {
+  .swiper-gallery .variant-image-overlay {
+    padding: 0.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .thumbnail-list_item--variant-color .variant-color-badge {
+    font-size: 0.9rem;
+    padding: 0.1rem 0.3rem;
+  }
+}
+
+/* Variant Filtering Styles */
+.swiper-slide.slide-hidden {
+  display: none !important;
+}
+
+.thumbnail-list__item.thumbnail-hidden {
+  display: none !important;
+}
+
+/* Smooth transitions for variant filtering */
+.swiper-gallery {
+  transition: opacity 0.3s ease;
+}
+
+.swiper-gallery.filtering {
+  opacity: 0.7;
+}
+
+/* Variant indicators */
+.swiper-slide--variant {
+  position: relative;
+}
+
+/* Subtle indicator for variant-specific images */
+.swiper-slide--variant::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  background: var(--gradient-accent, #007acc);
+  border-radius: 50%;
+  z-index: 2;
+  opacity: 0.7;
+}
+
+/* Variant slide overlay */
+.swiper-slide--variant .variant-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  padding: 1rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.swiper-slide--variant:hover .variant-image-overlay {
+  opacity: 1;
+}
+
+.swiper-slide--variant .variant-image-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Animation for filtering */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.swiper-slide:not(.slide-hidden) {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Loading state */
+.swiper-gallery.variant-filtering {
+  position: relative;
+}
+
+.swiper-gallery.variant-filtering::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--gradient-accent, #007acc);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

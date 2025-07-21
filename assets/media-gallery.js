@@ -6,22 +6,30 @@ if (!customElements.get('media-gallery')) {
         super();
         this.elements = {
           liveRegion: this.querySelector('[id^="GalleryStatus"]'),
-          viewer: this.querySelector('[id^="GalleryViewer"]'),
+          viewer: this.querySelector('[id^="GalleryViewer"]') || this.querySelector('swiper-gallery'),
           thumbnails: this.querySelector('[id^="GalleryThumbnails"]'),
         };
         this.mql = window.matchMedia('(min-width: 750px)');
         if (!this.elements.thumbnails) return;
 
-        this.elements.viewer.addEventListener('slideChanged', debounce(this.onSlideChanged.bind(this), 500));
+        // Only add slideChanged listener if viewer exists and has the method
+        if (this.elements.viewer && this.elements.viewer.addEventListener) {
+          this.elements.viewer.addEventListener('slideChanged', debounce(this.onSlideChanged.bind(this), 500));
+        }
+        
         this.elements.thumbnails.querySelectorAll('[data-target]').forEach((mediaToSwitch) => {
-          mediaToSwitch
-            .querySelector('button')
-            .addEventListener('click', this.setActiveMedia.bind(this, mediaToSwitch.dataset.target, false));
+          const button = mediaToSwitch.querySelector('button');
+          if (button) {
+            button.addEventListener('click', this.setActiveMedia.bind(this, mediaToSwitch.dataset.target, false));
+          }
         });
-        if (this.dataset.desktopLayout.includes('thumbnail') && this.mql.matches) this.removeListSemantic();
+        if (this.dataset.desktopLayout && this.dataset.desktopLayout.includes('thumbnail') && this.mql.matches) {
+          this.removeListSemantic();
+        }
       }
 
       onSlideChanged(event) {
+        if (!this.elements.thumbnails) return;
         const thumbnail = this.elements.thumbnails.querySelector(
           `[data-target="${event.detail.currentElement.dataset.mediaId}"]`
         );
@@ -29,12 +37,42 @@ if (!customElements.get('media-gallery')) {
       }
 
       setActiveMedia(mediaId, prepend) {
+        // Check if viewer exists
+        if (!this.elements.viewer) {
+
+          return;
+        }
+        
+        // For swiper-gallery, delegate to the swiper component
+        if (this.elements.viewer.tagName.toLowerCase() === 'swiper-gallery') {
+
+
+          
+          // Find the slide with matching media-id and trigger variant filtering if needed
+          const targetSlide = this.elements.viewer.querySelector(`[data-media-id="${mediaId}"]`);
+          if (targetSlide && targetSlide.dataset.variantId) {
+
+            // If it's a variant slide, trigger variant filtering
+            if (typeof this.elements.viewer.filterByVariant === 'function') {
+              this.elements.viewer.filterByVariant(targetSlide.dataset.variantId);
+            } else {
+
+            }
+            return;
+          } else {
+
+          }
+        }
+        
+        // Original logic for standard gallery
         const activeMedia =
           this.elements.viewer.querySelector(`[data-media-id="${mediaId}"]`) ||
           this.elements.viewer.querySelector('[data-media-id]');
         if (!activeMedia) {
+
           return;
         }
+        
         this.elements.viewer.querySelectorAll('[data-media-id]').forEach((element) => {
           element.classList.remove('is-active');
         });

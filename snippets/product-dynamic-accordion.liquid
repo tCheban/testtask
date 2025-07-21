@@ -1,0 +1,459 @@
+{% comment %}
+  Dynamic Product Accordion using Shopify Meta Objects
+  Requires: custom.accordion_items metafield with accordion_item meta objects
+{% endcomment %}
+
+{%- assign accordion_metafield = product.metafields.custom.accordion_items -%}
+
+{%- assign section_id = section.id | default: 'dynamic-accordion' -%}
+{%- assign allow_multiple = section.settings.allow_multiple_open | default: false -%}
+{%- assign max_items = section.settings.max_accordion_items | default: 10 -%}
+{%- assign sort_by = section.settings.accordion_sort_by | default: 'sort_order' -%}
+
+{%- assign accordion_objects = accordion_metafield.value -%}
+
+{%- assign objects_count = 0 -%}
+{%- for obj in accordion_objects -%}
+  {%- assign objects_count = objects_count | plus: 1 -%}
+{%- endfor -%}
+
+{%- if accordion_objects and objects_count > 0 -%}
+  {%- comment -%} Sort objects based on setting {%- endcomment -%}
+  {%- case sort_by -%}
+    {%- when 'sort_order' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'sort_order' -%}
+    {%- when 'sort_order_desc' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'sort_order' | reverse -%}
+    {%- when 'title' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'title' -%}
+    {%- when 'title_desc' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'title' | reverse -%}
+    {%- when 'created_at' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'created_at' -%}
+    {%- when 'created_at_desc' -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'created_at' | reverse -%}
+    {%- else -%}
+      {%- assign sorted_objects = accordion_objects | sort: 'sort_order' -%}
+  {%- endcase -%}
+
+  <div class="dynamic-accordion" 
+       id="DynamicAccordion-{{ section_id }}" 
+       data-allow-multiple="{{ allow_multiple }}"
+       data-max-items="{{ max_items }}"
+       data-sort-by="{{ sort_by }}">
+
+    {%- assign displayed_count = 0 -%}
+    {%- for accordion_obj in sorted_objects -%}
+      {%- if displayed_count >= max_items -%}
+        {%- break -%}
+      {%- endif -%}
+      
+      {%- assign title = accordion_obj.title | strip -%}
+      {%- if accordion_obj.description.type == 'rich_text_field' -%}
+        {%- assign description = accordion_obj.description | metafield_text -%}
+      {%- else -%}
+        {%- assign description = accordion_obj.description | strip -%}
+      {%- endif -%}
+      {%- assign is_open = accordion_obj.is_open | default: false -%}
+      {%- assign sort_order = accordion_obj.sort_order | default: forloop.index -%}
+      
+      {%- if title != blank and description != blank -%}
+        {%- assign displayed_count = displayed_count | plus: 1 -%}
+        
+        <div class="accordion-item" 
+             data-accordion-item 
+             data-sort-order="{{ sort_order }}"
+             data-item-index="{{ displayed_count }}">
+          <button 
+            class="accordion-header" 
+            type="button"
+            aria-expanded="{{ is_open }}"
+            aria-controls="accordion-content-{{ section_id }}-{{ displayed_count }}"
+            id="accordion-button-{{ section_id }}-{{ displayed_count }}"
+            data-accordion-trigger
+          >
+            <span class="accordion-title">{{ title }}</span>
+            <span class="accordion-icon" aria-hidden="true">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          
+          <div 
+            class="accordion-content{% if is_open %} accordion-content--open{% endif %}" 
+            id="accordion-content-{{ section_id }}-{{ displayed_count }}"
+            aria-labelledby="accordion-button-{{ section_id }}-{{ displayed_count }}"
+            data-accordion-content
+            {% unless is_open %}style="display: none;"{% endunless %}
+          >
+            <div class="accordion-body">
+              {%- if description contains '<' -%}
+                {{ description }}
+              {%- else -%}
+                {{ description | newline_to_br }}
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign total_valid_items = 0 -%}
+    {%- for accordion_obj in sorted_objects -%}
+      {%- assign title = accordion_obj.title | strip -%}
+      {%- assign description = accordion_obj.description | strip -%}
+      {%- if title != blank and description != blank -%}
+        {%- assign total_valid_items = total_valid_items | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if total_valid_items > max_items -%}
+      <div class="accordion-load-more">
+        <button type="button" class="accordion-load-more-btn" onclick="showMoreAccordionItems(this)">
+          Show {{ total_valid_items | minus: max_items }} More Items
+        </button>
+        <div class="accordion-remaining-items" style="display: none;">
+          {%- assign remaining_count = 0 -%}
+          {%- for accordion_obj in sorted_objects -%}
+            {%- if remaining_count >= max_items -%}
+              {%- assign title = accordion_obj.title | strip -%}
+              {%- if accordion_obj.description.type == 'rich_text_field' -%}
+                {%- assign description = accordion_obj.description | metafield_text -%}
+              {%- else -%}
+                {%- assign description = accordion_obj.description | strip -%}
+              {%- endif -%}
+              {%- assign is_open = accordion_obj.is_open | default: false -%}
+              {%- assign sort_order = accordion_obj.sort_order | default: forloop.index -%}
+              
+              {%- if title != blank and description != blank -%}
+                {%- assign item_index = remaining_count | plus: 1 -%}
+                
+                <div class="accordion-item" 
+                     data-accordion-item 
+                     data-sort-order="{{ sort_order }}"
+                     data-item-index="{{ item_index }}">
+                  <button 
+                    class="accordion-header" 
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="accordion-content-extra-{{ section_id }}-{{ item_index }}"
+                    id="accordion-button-extra-{{ section_id }}-{{ item_index }}"
+                    data-accordion-trigger
+                  >
+                    <span class="accordion-title">{{ title }}</span>
+                    <span class="accordion-icon" aria-hidden="true">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
+                    </span>
+                  </button>
+                  
+                  <div 
+                    class="accordion-content" 
+                    id="accordion-content-extra-{{ section_id }}-{{ item_index }}"
+                    aria-labelledby="accordion-button-extra-{{ section_id }}-{{ item_index }}"
+                    data-accordion-content
+                    style="display: none;"
+                  >
+                    <div class="accordion-body">
+                      {%- if description contains '<' -%}
+                        {{ description }}
+                      {%- else -%}
+                        {{ description | newline_to_br }}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+            
+            {%- assign temp_title = accordion_obj.title | strip -%}
+            {%- if accordion_obj.description.type == 'rich_text_field' -%}
+              {%- assign temp_description = accordion_obj.description | metafield_text | strip -%}
+            {%- else -%}
+              {%- assign temp_description = accordion_obj.description | strip -%}
+            {%- endif -%}
+            {%- if temp_title != blank and temp_description != blank -%}
+              {%- assign remaining_count = remaining_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  <div class="no-accordion-message" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0; border-radius: 8px;">
+    <h4 style="margin: 0 0 10px 0; color: #856404;">📝 Dynamic Accordion Setup Required</h4>
+    <p style="margin: 0 0 10px 0; color: #856404;">
+      <strong>To display accordion:</strong>
+    </p>
+    <ol style="margin: 0; padding-left: 20px; color: #856404;">
+      <li>Create Meta Objects in Settings → Metafields → Meta objects</li>
+      <li>Add accordion_item type with title, description, is_open, sort_order fields</li>
+      <li>Create product metafield: custom.accordion_items (List of meta objects)</li>
+      <li>Add accordion items to this product</li>
+      <li>Enable "Show dynamic accordion" in theme settings</li>
+    </ol>
+  </div>
+{%- endif -%}
+
+<style>
+.dynamic-accordion {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  width: 100%;
+  padding: 15px 20px;
+  background: #f9f9f9;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.accordion-header:hover {
+  background: #f0f0f0;
+}
+
+.accordion-header[aria-expanded="true"] {
+  background: #e8f4fd;
+}
+
+.accordion-title {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.accordion-icon {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accordion-header[aria-expanded="true"] .accordion-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.accordion-content {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.accordion-content.opening {
+  display: block;
+}
+
+.accordion-content--open {
+  display: block;
+}
+
+.accordion-load-more {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.accordion-load-more-btn {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.accordion-load-more-btn:hover {
+  background: #333;
+  color: white;
+  border-color: #333;
+}
+
+.accordion-remaining-items {
+  margin-top: 15px;
+}
+
+.accordion-remaining-items .accordion-item {
+  border-top: 1px solid #e0e0e0;
+  animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.accordion-body {
+  padding: 20px;
+  background: white;
+  line-height: 1.6;
+  color: #666;
+}
+
+.accordion-body p {
+  margin: 0 0 10px 0;
+}
+
+.accordion-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 749px) {
+  .accordion-header {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+  
+  .accordion-body {
+    padding: 15px;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const accordions = document.querySelectorAll('.dynamic-accordion');
+  
+  accordions.forEach(function(accordion) {
+    const allowMultiple = accordion.dataset.allowMultiple === 'true';
+    const triggers = accordion.querySelectorAll('[data-accordion-trigger]');
+    
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function() {
+        const content = document.getElementById(trigger.getAttribute('aria-controls'));
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        
+        // If not allowing multiple, close all other items
+        if (!allowMultiple && !isExpanded) {
+          triggers.forEach(function(otherTrigger) {
+            if (otherTrigger !== trigger) {
+              const otherContent = document.getElementById(otherTrigger.getAttribute('aria-controls'));
+              closeAccordionItem(otherTrigger, otherContent);
+            }
+          });
+        }
+        
+        // Toggle current item
+        if (isExpanded) {
+          closeAccordionItem(trigger, content);
+        } else {
+          openAccordionItem(trigger, content);
+        }
+      });
+    });
+  });
+  
+  function openAccordionItem(trigger, content) {
+    trigger.setAttribute('aria-expanded', 'true');
+    content.style.display = 'block';
+    content.classList.add('opening');
+    
+    // Get the actual height
+    const height = content.scrollHeight;
+    content.style.height = '0px';
+    
+    // Trigger reflow
+    content.offsetHeight;
+    
+    // Animate to full height
+    content.style.height = height + 'px';
+    
+    // Clean up after animation
+    setTimeout(function() {
+      content.style.height = 'auto';
+      content.classList.remove('opening');
+    }, 300);
+  }
+  
+  function closeAccordionItem(trigger, content) {
+    trigger.setAttribute('aria-expanded', 'false');
+    
+    // Set current height
+    content.style.height = content.scrollHeight + 'px';
+    
+    // Trigger reflow
+    content.offsetHeight;
+    
+    // Animate to 0
+    content.style.height = '0px';
+    
+    // Hide after animation
+    setTimeout(function() {
+      content.style.display = 'none';
+      content.style.height = 'auto';
+    }, 300);
+  }
+});
+
+function showMoreAccordionItems(button) {
+  const loadMoreContainer = button.closest('.accordion-load-more');
+  const remainingItems = loadMoreContainer.querySelector('.accordion-remaining-items');
+  const accordion = loadMoreContainer.closest('.dynamic-accordion');
+  
+  if (remainingItems) {
+    remainingItems.style.display = 'block';
+    loadMoreContainer.style.display = 'none';
+    
+    // Initialize accordion functionality for new items
+    const allowMultiple = accordion.dataset.allowMultiple === 'true';
+    const newTriggers = remainingItems.querySelectorAll('[data-accordion-trigger]');
+    
+    newTriggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function() {
+        const content = document.getElementById(trigger.getAttribute('aria-controls'));
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        
+        // If not allowing multiple, close all other items in the entire accordion
+        if (!allowMultiple && !isExpanded) {
+          const allTriggers = accordion.querySelectorAll('[data-accordion-trigger]');
+          allTriggers.forEach(function(otherTrigger) {
+            if (otherTrigger !== trigger) {
+              const otherContent = document.getElementById(otherTrigger.getAttribute('aria-controls'));
+              closeAccordionItem(otherTrigger, otherContent);
+            }
+          });
+        }
+        
+        // Toggle current item
+        if (isExpanded) {
+          closeAccordionItem(trigger, content);
+        } else {
+          openAccordionItem(trigger, content);
+        }
+      });
+    });
+  }
+}
+</script>

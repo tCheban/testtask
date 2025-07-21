@@ -1077,7 +1077,34 @@ class VariantSelects extends HTMLElement {
           selectedOptionValues: this.selectedOptionValues,
         },
       });
+      
+      // Add delay and dispatch variant change event
+      setTimeout(() => {
+        this.dispatchVariantChangeEvent();
+      }, 50);
     });
+  }
+  
+  dispatchVariantChangeEvent() {
+    console.log('🔧 VariantSelects dispatching variant change for options:', this.selectedOptionValues);
+    
+    // Simple: just dispatch the event with the selected variant ID
+    const variantId = this.selectedOptionValues[0];
+    
+    console.log('🚀 Dispatching variant change event for variant:', variantId);
+    
+    // Dispatch event to SwiperGallery
+    const event = new CustomEvent('shopify:variant:change', {
+      detail: { 
+        variant: { 
+          id: variantId 
+        } 
+      }
+    });
+    
+    document.dispatchEvent(event);
+    
+    console.log('✅ Variant change event dispatched');
   }
 
   updateSelectionMetadata({ target }) {

@@ -15,6 +15,9 @@
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
   {{ 'component-rating.css' | asset_url | stylesheet_tag }}
   {{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+  {% if section.settings.gallery_layout == 'slider' %}
+    {{ 'component-swiper-gallery.css' | asset_url | stylesheet_tag }}
+  {% endif %}
 
   {% unless product.has_only_default_variant %}
     {{ 'component-product-variant-picker.css' | asset_url | stylesheet_tag }}
@@ -76,7 +79,11 @@
   <div class="page-width">
     <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
       <div class="grid__item product__media-wrapper">
-        {% render 'product-media-gallery', variant_images: variant_images %}
+        {% if section.settings.gallery_layout == 'slider' %}
+          {% render 'product-swiper-gallery', variant_images: variant_images, section_id: section.id %}
+        {% else %}
+          {% render 'product-media-gallery', variant_images: variant_images %}
+        {% endif %}
       </div>
       <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         <section
@@ -670,6 +677,10 @@
       </div>
     </div>
 
+    {%- if section.settings.show_dynamic_accordion -%}
+      {% render 'product-dynamic-accordion', product: product, section: section %}
+    {%- endif -%}
+
     {% render 'product-media-modal', variant_images: variant_images %}
 
     {% assign popups = section.blocks | where: 'type', 'popup' %}
@@ -701,6 +712,9 @@
     {%- if product.media.size > 0 -%}
       <script src="{{ 'product-modal.js' | asset_url }}" defer="defer"></script>
       <script src="{{ 'media-gallery.js' | asset_url }}" defer="defer"></script>
+      {% if section.settings.gallery_layout == 'slider' %}
+        <script src="{{ 'swiper-gallery.js' | asset_url }}" defer="defer"></script>
+      {% endif %}
     {%- endif -%}
 
     {%- if first_3d_model -%}
@@ -2152,6 +2166,10 @@
         {
           "value": "thumbnail_slider",
           "label": "t:sections.main-product.settings.gallery_layout.options__4.label"
+        },
+        {
+          "value": "slider",
+          "label": "Slider Gallery"
         }
       ],
       "default": "stacked",
@@ -2224,6 +2242,141 @@
       "id": "enable_video_looping",
       "default": false,
       "label": "t:sections.main-product.settings.enable_video_looping.label"
+    },
+    {
+      "type": "header",
+      "content": "Swiper Gallery Settings",
+      "info": "These settings are only available when Gallery Layout is set to 'Slider Gallery'"
+    },
+    {
+      "type": "range",
+      "id": "desktop_slides_per_view",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "label": "Desktop slides per view",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "tablet_slides_per_view",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Tablet slides per view",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "mobile_slides_per_view",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Mobile slides per view",
+      "default": 1
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_pagination",
+      "default": true,
+      "label": "Enable pagination"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_navigation_arrows",
+      "default": true,
+      "label": "Enable navigation arrows"
+    },
+    {
+      "type": "range",
+      "id": "desktop_space_between",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop space between slides",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "tablet_space_between",
+      "min": 0,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Tablet space between slides",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_space_between",
+      "min": 0,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile space between slides",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Dynamic Accordion Settings",
+      "info": "Configure the accordion created from product metafields"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_accordion",
+      "default": true,
+      "label": "Show dynamic accordion",
+      "info": "Display accordion if product has accordion metafields"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_multiple_open",
+      "default": false,
+      "label": "Allow multiple accordions to be open",
+      "info": "When enabled, multiple accordion items can be open at the same time"
+    },
+    {
+      "type": "range",
+      "id": "max_accordion_items",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "label": "Maximum accordion items to show",
+      "info": "Limit the number of accordion items displayed"
+    },
+    {
+      "type": "select",
+      "id": "accordion_sort_by",
+      "default": "sort_order",
+      "label": "Sort accordion items by",
+      "options": [
+        {
+          "value": "sort_order",
+          "label": "Sort Order (ascending)"
+        },
+        {
+          "value": "sort_order_desc",
+          "label": "Sort Order (descending)"
+        },
+        {
+          "value": "title",
+          "label": "Title (A-Z)"
+        },
+        {
+          "value": "title_desc",
+          "label": "Title (Z-A)"
+        },
+        {
+          "value": "created_at",
+          "label": "Created Date (oldest first)"
+        },
+        {
+          "value": "created_at_desc",
+          "label": "Created Date (newest first)"
+        }
+      ]
     },
     {
       "type": "header",

@@ -5,7 +5,6 @@ if (!customElements.get('quick-add-bulk')) {
       constructor() {
         super();
         this.quantity = this.querySelector('quantity-input');
-
         const debouncedOnChange = debounce((event) => {
           if (parseInt(event.target.value) === 0) {
             this.startQueue(event.target.dataset.index, parseInt(event.target.value));
@@ -13,13 +12,11 @@ if (!customElements.get('quick-add-bulk')) {
             this.validateQuantity(event);
           }
         }, ON_CHANGE_DEBOUNCE_TIMER);
-
         this.addEventListener('change', debouncedOnChange.bind(this));
         this.listenForActiveInput();
         this.listenForKeydown();
         this.lastActiveInputId = null;
       }
-
       connectedCallback() {
         this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
           if (
@@ -36,28 +33,23 @@ if (!customElements.get('quick-add-bulk')) {
           });
         });
       }
-
       disconnectedCallback() {
         if (this.cartUpdateUnsubscriber) {
           this.cartUpdateUnsubscriber();
         }
       }
-
       get input() {
         return this.querySelector('quantity-input input');
       }
-
       selectProgressBar() {
         return this.querySelector('.progress-bar-container');
       }
-
       listenForActiveInput() {
         if (!this.classList.contains('hidden')) {
           this.input?.addEventListener('focusin', (event) => event.target.select());
         }
         this.isEnterPressed = false;
       }
-
       listenForKeydown() {
         this.input?.addEventListener('keydown', (event) => {
           if (event.key === 'Enter') {
@@ -66,7 +58,6 @@ if (!customElements.get('quick-add-bulk')) {
           }
         });
       }
-
       cleanErrorMessageOnType(event) {
         event.target.addEventListener(
           'keypress',
@@ -76,15 +67,12 @@ if (!customElements.get('quick-add-bulk')) {
           { once: true }
         );
       }
-
       get sectionId() {
         if (!this._sectionId) {
           this._sectionId = this.closest('.collection-quick-add-bulk').dataset.id;
         }
-
         return this._sectionId;
       }
-
       onCartUpdate() {
         return new Promise((resolve, reject) => {
           fetch(`${this.getSectionsUrl()}?section_id=${this.sectionId}`)
@@ -98,29 +86,23 @@ if (!customElements.get('quick-add-bulk')) {
               resolve();
             })
             .catch((e) => {
-              console.error(e);
               reject(e);
             });
         });
       }
-
       getSectionsUrl() {
         const pageParams = new URLSearchParams(window.location.search);
         const pageNumber = decodeURIComponent(pageParams.get('page') || '');
-
         return `${window.location.pathname}${pageNumber ? `?page=${pageNumber}` : ''}`;
       }
-
       updateMultipleQty(items) {
         this.selectProgressBar().classList.remove('hidden');
-
         const ids = Object.keys(items);
         const body = JSON.stringify({
           updates: items,
           sections: this.getSectionsToRender().map((section) => section.section),
           sections_url: this.getSectionsUrl(),
         });
-
         fetch(`${routes.cart_update_url}`, { ...fetchConfig(), ...{ body } })
           .then((response) => {
             return response.text();
@@ -144,7 +126,6 @@ if (!customElements.get('quick-add-bulk')) {
             this.setRequestStarted(false);
           });
       }
-
       getSectionsToRender() {
         return [
           {
@@ -164,7 +145,6 @@ if (!customElements.get('quick-add-bulk')) {
           },
         ];
       }
-
       renderSections(parsedState, ids) {
         const intersection = this.queue.filter((element) => ids.includes(element.id));
         if (intersection.length !== 0) return;
@@ -184,11 +164,9 @@ if (!customElements.get('quick-add-bulk')) {
             );
           }
         });
-
         if (this.isEnterPressed) {
           this.querySelector(`#Quantity-${this.lastActiveInputId}`).select();
         }
-
         this.listenForActiveInput();
         this.listenForKeydown();
       }
