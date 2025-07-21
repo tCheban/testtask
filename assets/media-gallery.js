@@ -37,39 +37,24 @@ if (!customElements.get('media-gallery')) {
       }
 
       setActiveMedia(mediaId, prepend) {
-        // Check if viewer exists
         if (!this.elements.viewer) {
-
           return;
         }
         
-        // For swiper-gallery, delegate to the swiper component
         if (this.elements.viewer.tagName.toLowerCase() === 'swiper-gallery') {
-
-
-          
-          // Find the slide with matching media-id and trigger variant filtering if needed
           const targetSlide = this.elements.viewer.querySelector(`[data-media-id="${mediaId}"]`);
           if (targetSlide && targetSlide.dataset.variantId) {
-
-            // If it's a variant slide, trigger variant filtering
             if (typeof this.elements.viewer.filterByVariant === 'function') {
               this.elements.viewer.filterByVariant(targetSlide.dataset.variantId);
-            } else {
-
             }
             return;
-          } else {
-
           }
         }
         
-        // Original logic for standard gallery
         const activeMedia =
           this.elements.viewer.querySelector(`[data-media-id="${mediaId}"]`) ||
           this.elements.viewer.querySelector('[data-media-id]');
         if (!activeMedia) {
-
           return;
         }
         

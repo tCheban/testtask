@@ -178,20 +178,6 @@
       </div>
     {%- endif -%}
   </div>
-{%- else -%}
-  <div class="no-accordion-message" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0; border-radius: 8px;">
-    <h4 style="margin: 0 0 10px 0; color: #856404;">📝 Dynamic Accordion Setup Required</h4>
-    <p style="margin: 0 0 10px 0; color: #856404;">
-      <strong>To display accordion:</strong>
-    </p>
-    <ol style="margin: 0; padding-left: 20px; color: #856404;">
-      <li>Create Meta Objects in Settings → Metafields → Meta objects</li>
-      <li>Add accordion_item type with title, description, is_open, sort_order fields</li>
-      <li>Create product metafield: custom.accordion_items (List of meta objects)</li>
-      <li>Add accordion items to this product</li>
-      <li>Enable "Show dynamic accordion" in theme settings</li>
-    </ol>
-  </div>
 {%- endif -%}
 
 <style>

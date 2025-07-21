@@ -284,7 +284,9 @@ if (!customElements.get('product-info')) {
             const html = new DOMParser().parseFromString(responseText, 'text/html');
             this.updateQuantityRules(this.dataset.section, html);
           })
-          .catch((e) => console.error(e))
+          .catch(() => {
+            this.dispatchEvent(new CustomEvent('product-info:error', { bubbles: true }));
+          })
           .finally(() => this.querySelector('.quantity__rules-cart .loading__spinner').classList.add('hidden'));
       }
       updateQuantityRules(sectionId, html) {

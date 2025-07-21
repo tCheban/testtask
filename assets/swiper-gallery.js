@@ -385,7 +385,6 @@ class SwiperGallery extends HTMLElement {
           }
         }
       } catch (e) {
-        // Error parsing initial variant data
       }
     }
   }
@@ -478,20 +477,7 @@ class SwiperGallery extends HTMLElement {
         // Force transform update
         this.updateTransform();
       } else {
-        // Show fallback message
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide';
-        slide.innerHTML = `
-          <div class="media media--transparent media--adapt media--height-adapt product__media-item">
-            <div style="padding: 40px; text-align: center; background: #f8f8f8; border: 1px solid #ddd;">
-              <h3>No images available</h3>
-              <p>Variant: ${variant.title}</p>
-            </div>
-          </div>
-        `;
-        container.appendChild(slide);
-        this.refreshSlides();
-        this.updateLayout();
+        return;
       }
     } catch (e) {
     }
