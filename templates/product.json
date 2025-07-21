@@ -81,7 +81,7 @@
         "desktop_slides_per_view": 2,
         "tablet_slides_per_view": 1,
         "mobile_slides_per_view": 1,
-        "enable_pagination": true,
+        "enable_pagination": false,
         "enable_navigation_arrows": true,
         "desktop_space_between": 20,
         "tablet_space_between": 15,
