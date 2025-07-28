@@ -87,7 +87,7 @@
         "tablet_space_between": 15,
         "mobile_space_between": 10,
         "show_dynamic_accordion": true,
-        "allow_multiple_open": false,
+        "allow_multiple_open": true,
         "max_accordion_items": 10,
         "accordion_sort_by": "sort_order",
         "padding_top": 36,
