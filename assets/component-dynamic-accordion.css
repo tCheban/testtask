@@ -1,0 +1,126 @@
+/* Dynamic Accordion Component Styles */
+.dynamic-accordion {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.dynamic-accordion .accordion-item {
+  margin-top: 0;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+.dynamic-accordion .accordion-item + .accordion-item {
+  border-top: none;
+}
+
+.dynamic-accordion .accordion-item summary {
+  display: flex;
+  position: relative;
+  line-height: 1;
+  padding: 1.5rem 0;
+  cursor: pointer;
+}
+
+.dynamic-accordion .accordion-item .accordion-title {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  font-size: calc(var(--font-heading-scale) * 1.6rem);
+  font-weight: var(--font-heading-weight);
+  line-height: calc(1 + 0.3 / var(--font-body-scale));
+  word-break: break-word;
+}
+
+.dynamic-accordion .accordion-item .accordion-title + .icon-caret {
+  height: calc(var(--font-heading-scale) * 0.6rem);
+  transition: transform var(--duration-short) ease;
+}
+
+.dynamic-accordion .accordion-item details[open] > summary .icon-caret {
+  transform: rotate(180deg);
+}
+
+.dynamic-accordion .accordion-item .accordion-content {
+  margin-bottom: 1.5rem;
+  word-break: break-word;
+  line-height: calc(1 + 0.6 / var(--font-body-scale));
+}
+
+.dynamic-accordion .load-more-container {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+.dynamic-accordion .load-more-button {
+  background-color: transparent;
+  border: 0.2rem solid rgba(var(--color-foreground), 0.55);
+  color: rgb(var(--color-foreground));
+  padding: 1rem 2rem;
+  cursor: pointer;
+  font-size: 1.4rem;
+  border-radius: var(--buttons-radius-outset);
+  transition: all var(--duration-short) ease;
+}
+
+.dynamic-accordion .load-more-button:hover {
+  border-color: rgb(var(--color-foreground));
+  background-color: rgba(var(--color-foreground), 0.05);
+}
+
+.dynamic-accordion .remaining-count {
+  color: rgba(var(--color-foreground), 0.7);
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+/* Product page specific styles */
+.product__dynamic-accordion-wrapper {
+  margin-top: 2rem;
+  padding: 0;
+}
+
+.product .dynamic-accordion {
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  padding-top: 2rem;
+  margin-top: 0;
+}
+
+/* When placed after description */
+.product__description + .product__dynamic-accordion-wrapper .dynamic-accordion {
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  padding-top: 0;
+  margin-top: 2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .product__dynamic-accordion-wrapper {
+    margin-top: 2.5rem;
+  }
+  
+  .product .dynamic-accordion {
+    padding-top: 2.5rem;
+  }
+  
+  .product__description + .product__dynamic-accordion-wrapper .dynamic-accordion {
+    padding-top: 0;
+    margin-top: 2.5rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .product__dynamic-accordion-wrapper {
+    margin-top: 3rem;
+  }
+  
+  .product .dynamic-accordion {
+    padding-top: 3rem;
+  }
+  
+  .product__description + .product__dynamic-accordion-wrapper .dynamic-accordion {
+    padding-top: 0;
+    margin-top: 3rem;
+  }
+}
